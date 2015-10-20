@@ -52,11 +52,10 @@
         // setInterval(bildschirm(), drawBackground(), drawLevelOne(), 1000);
 
 
-
+        //FIXME: dynamische canvas Größe
         function bildschirm() {
             ctx.canvas.width = window.innerWidth - 10;
             ctx.canvas.height = window.innerHeight - 40;
-
         }
 
         /*function showCoords(event) {
@@ -67,8 +66,6 @@
 
             document.getElementById("demo").innerHTML = coords
         }*/
-
-
 
         function analyzeLevel(myLevel) {
 
@@ -88,7 +85,6 @@
                 break;
             }
         }
-
 
         function drawBackground() {
 
@@ -114,7 +110,6 @@
                 drawRight();
             }
         }
-
 
         //level_Two Editor
         function drawLevelTwo() {
@@ -167,7 +162,7 @@
             }
         }
 
-        //level-pattern random(UNFINISHED!)
+        //TODO: Randomgenerator
         function drawRandom() {
 
             var min = -100;
@@ -197,8 +192,8 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-
         //key pressed
+        //TODO: seitliche Steuerung
         function doKeyDown(e) {
             if (e.keyCode == 37) {
 
@@ -208,7 +203,6 @@
                 drawLevelOne();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
-
             if (e.keyCode == 39) {
 
                 clearCanvas();
@@ -217,8 +211,6 @@
                 drawLevelOne();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
-
-
             if (e.keyCode == 38) {
 
                 clearCanvas();
@@ -227,7 +219,6 @@
                 drawLevelOne();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
-
             if (e.keyCode == 40) {
 
                 clearCanvas();
@@ -235,10 +226,10 @@
                 drawBackground();
                 drawLevelOne();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
-
             }
         }
     </script>
+
 
 </body>
 
