@@ -1,0 +1,245 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <input type="button" id="buttonOne" value="Level 1" onclick="analyzeLevel(this.value)">
+    <input type="button" id="buttonTwo" value="Level 2" onclick="analyzeLevel(this.value)">
+
+    <p id="demo"></p>
+
+
+    <canvas id="myCanvas" tabindex="0"></canvas>
+
+    <script type="text/javascript">
+        var canvas = document.getElementById('myCanvas');
+        var ctx = canvas.getContext('2d');
+
+
+        var racer = new Image();
+        racer.src = "Racer.png";
+
+        var racerX = 500;
+        var racerY = 20;
+
+
+        window.onload = function canvasRacerGame() {
+
+            bildschirm();
+            drawBackground();
+            drawLevelOne();
+
+            ctx.drawImage(racer, 500, 20, 40, 80);
+
+            canvas.addEventListener('keydown', doKeyDown, true);
+
+        }
+
+        //   racer.onload = function () {
+        //     ctx.drawImage(racer, 500, 20, 40, 80);
+        //}
+
+        // setInterval(bildschirm(), drawBackground(), drawLevelOne(), 1000);
+
+
+
+        function bildschirm() {
+            ctx.canvas.width = window.innerWidth - 10;
+            ctx.canvas.height = window.innerHeight - 40;
+
+        }
+
+        /*function showCoords(event) {
+
+            var x = event.clientX;
+            var y = event.clientY;
+            var coords = "X coords: " + x + "Y coords: " + y;
+
+            document.getElementById("demo").innerHTML = coords
+        }*/
+
+
+
+        function analyzeLevel(myLevel) {
+
+            switch (myLevel) {
+
+            case 'Level 1':
+
+                clearCanvas();
+                drawBackground();
+                drawLevelOne();
+                break;
+
+            case 'Level 2':
+                clearCanvas();
+                drawBackground();
+                drawLevelTwo();
+                break;
+            }
+        }
+
+
+        function drawBackground() {
+
+            ctx.beginPath();
+            ctx.rect((canvas.width - 500) / 2, 0, 500, canvas.height);
+            ctx.fillStyle = 'lightgray';
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        //level_One Editor
+        function drawLevelOne() {
+
+            var now = new Date();
+            var second = now.getSeconds();
+            h = 100;
+            y = 0;
+
+            drawStraight();
+
+            for (var i = 0; i < 1; i++) {
+                drawLeft();
+                drawRight();
+            }
+        }
+
+
+        //level_Two Editor
+        function drawLevelTwo() {
+
+            var now = new Date();
+            var second = now.getSeconds();
+            h = 50;
+            y = 0;
+
+            // drawBackground();
+            drawStraight();
+
+            for (var i = 0; i < 1; i++) {
+                drawLeft();
+                drawLeft();
+                drawRight();
+                drawLeft();
+            }
+        }
+
+        //level-pattern straight
+        function drawStraight() {
+            for (var i = 1; i < 20; i++) {
+
+                h = h + 11;
+
+                drawWall(y, h);
+            }
+        }
+
+        //level-pattern to left
+        function drawLeft() {
+            for (var i = 1; i < 16; i++) {
+
+                h = h + 11;
+                y = y + 5;
+
+                drawWall(y, h);
+            }
+        }
+
+        //level-pattern to right
+        function drawRight() {
+            for (var i = 1; i < 16; i++) {
+
+                h = h + 11;
+                y = y - 5;
+
+                drawWall(y, h);
+            }
+        }
+
+        //level-pattern random(UNFINISHED!)
+        function drawRandom() {
+
+            var min = -100;
+            var max = 100;
+            var x = (Math.random() * (max - min + 1)) + min;
+        }
+
+        //left and right wall 
+        function drawWall(y, h) {
+
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2 - 250, h);
+            ctx.lineTo(canvas.width / 2 - 50 - y, h);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = "5";
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2 + 250, h);
+            ctx.lineTo(canvas.width / 2 + 50 - y, h);
+            ctx.strokeStyle = "black";
+            ctx.stroke();
+        }
+
+        function clearCanvas() {
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+
+        //key pressed
+        function doKeyDown(e) {
+            if (e.keyCode == 37) {
+
+                clearCanvas();
+                racerX = racerX - 10;
+                drawBackground();
+                drawLevelOne();
+                ctx.drawImage(racer, racerX, racerY, 40, 80);
+            }
+
+            if (e.keyCode == 39) {
+
+                clearCanvas();
+                racerX = racerX + 10;
+                drawBackground();
+                drawLevelOne();
+                ctx.drawImage(racer, racerX, racerY, 40, 80);
+            }
+
+
+            if (e.keyCode == 38) {
+
+                clearCanvas();
+                racerY = racerY - 10;
+                drawBackground();
+                drawLevelOne();
+                ctx.drawImage(racer, racerX, racerY, 40, 80);
+            }
+
+            if (e.keyCode == 40) {
+
+                clearCanvas();
+                racerY = racerY + 10;
+                drawBackground();
+                drawLevelOne();
+                ctx.drawImage(racer, racerX, racerY, 40, 80);
+
+            }
+        }
+    </script>
+
+</body>
+
+</html>
