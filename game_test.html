@@ -13,13 +13,22 @@
 
 <body>
 
-    <input type="button" id="buttonOne" value="Level 1" onclick="analyzeLevel(this.value)">
-    <input type="button" id="buttonTwo" value="Level 2" onclick="analyzeLevel(this.value)">
+    <input type="button" id="buttonOne" value="Level 1" onclick="analyzeLevel(this.value), timer(), highscore = 0">
+    <input type="button" id="buttonTwo" value="Level 2" onclick="analyzeLevel(this.value), timer(), highscore = 0">
+    <input type="button" id="buttonRandom" value="Level Random" onclick="analyzeLevel(this.value), window.setInterval(timer(), 1000), highscore = 0">
+    <input type="button" id="buttonStart" value="Start Level" onclick="analyzeLevel(this.value), window.setInterval(startLevel(), 1000)">
 
-    <p id="demo"></p>
+    <h1 id="demo"></h1>
+    <h2 id="zaehler"></h2>
 
 
     <canvas id="myCanvas" tabindex="0"></canvas>
+
+    <!-- TODO: Highscore-->
+    <!-- TODO: Kollisionsabfrage-->
+    <!-- TODO: Levelmovement-->
+    <!-- TODO: Schwierigkeitsgrad-->
+
 
     <script type="text/javascript">
         var canvas = document.getElementById('myCanvas');
@@ -31,28 +40,22 @@
 
         var racerX = 500;
         var racerY = 20;
+        highscore = 0;
 
 
         window.onload = function canvasRacerGame() {
 
-            bildschirm();
-            drawBackground();
-            drawLevelOne();
+                clearCanvas();
+                bildschirm();
+                drawBackground();
+                drawLevelOne();
 
-            ctx.drawImage(racer, 500, 20, 40, 80);
+                ctx.drawImage(racer, 500, 20, 40, 80);
 
-            canvas.addEventListener('keydown', doKeyDown, true);
+                canvas.addEventListener('keydown', doKeyDown, true);
 
-        }
-
-        //   racer.onload = function () {
-        //     ctx.drawImage(racer, 500, 20, 40, 80);
-        //}
-
-        // setInterval(bildschirm(), drawBackground(), drawLevelOne(), 1000);
-
-
-        //FIXME: dynamische canvas Größe
+            }
+            //FIXME: dynamische canvas Größe
         function bildschirm() {
             ctx.canvas.width = window.innerWidth - 10;
             ctx.canvas.height = window.innerHeight - 40;
@@ -67,24 +70,97 @@
             document.getElementById("demo").innerHTML = coords
         }*/
 
+
+        //FIXME: doppelte Ränder
         function analyzeLevel(myLevel) {
 
             switch (myLevel) {
 
             case 'Level 1':
 
-                clearCanvas();
-                drawBackground();
                 drawLevelOne();
                 break;
 
             case 'Level 2':
-                clearCanvas();
-                drawBackground();
+
                 drawLevelTwo();
+                break;
+
+            case 'Level Random':
+
+                drawLevelRandom();
+                break;
+
+            case 'Start Level':
+
+                startLevel();
                 break;
             }
         }
+
+        //level_One Editor
+        function drawLevelOne() {
+
+            h = 100;
+            y = 0;
+
+            clearCanvas();
+            drawBackground();
+            drawStraight();
+
+            for (var i = 0; i < 1; i++) {
+                drawLeft();
+                drawRight();
+            }
+            ctx.drawImage(racer, canvas.width, 20, 40, 80);
+
+        }
+
+        //level_Two Editor
+        function drawLevelTwo() {
+
+            h = 100;
+            y = 0;
+
+            clearCanvas();
+            drawBackground();
+            drawStraight();
+
+            for (var i = 0; i < 1; i++) {
+                drawLeft();
+                drawLeft();
+                drawRight();
+                drawLeft();
+            }
+            ctx.drawImage(racer, canvas.width, 20, 40, 80);
+
+        }
+
+
+        //level_Two Editor
+        function drawLevelRandom() {
+
+            var now = new Date();
+            var second = now.getSeconds();
+            h = 100;
+            y = 0;
+            var counter = 0;
+
+            clearCanvas();
+            drawBackground();
+            drawStraight();
+
+
+            for (var i = 0; i <= 3; i++) {
+
+                drawRandom(counter);
+
+            }
+
+            ctx.drawImage(racer, canvas.width, 20, 40, 80);
+
+        }
+
 
         function drawBackground() {
 
@@ -95,39 +171,11 @@
             ctx.stroke();
         }
 
-        //level_One Editor
-        function drawLevelOne() {
+        function startLevel() {
 
-            var now = new Date();
-            var second = now.getSeconds();
-            h = 100;
-            y = 0;
+            clearCanvas();
+            h = h + 5;
 
-            drawStraight();
-
-            for (var i = 0; i < 1; i++) {
-                drawLeft();
-                drawRight();
-            }
-        }
-
-        //level_Two Editor
-        function drawLevelTwo() {
-
-            var now = new Date();
-            var second = now.getSeconds();
-            h = 50;
-            y = 0;
-
-            // drawBackground();
-            drawStraight();
-
-            for (var i = 0; i < 1; i++) {
-                drawLeft();
-                drawLeft();
-                drawRight();
-                drawLeft();
-            }
         }
 
         //level-pattern straight
@@ -142,7 +190,7 @@
 
         //level-pattern to left
         function drawLeft() {
-            for (var i = 1; i < 16; i++) {
+            for (var i = 1; i < 15; i++) {
 
                 h = h + 11;
                 y = y + 5;
@@ -153,7 +201,7 @@
 
         //level-pattern to right
         function drawRight() {
-            for (var i = 1; i < 16; i++) {
+            for (var i = 1; i < 15; i++) {
 
                 h = h + 11;
                 y = y - 5;
@@ -162,12 +210,45 @@
             }
         }
 
-        //TODO: Randomgenerator
-        function drawRandom() {
 
-            var min = -100;
-            var max = 100;
-            var x = (Math.random() * (max - min + 1)) + min;
+        function drawRandom(counter) {
+
+
+            var x = Math.floor((Math.random() * 3) + 1);
+
+            switch (x) {
+
+            case 1:
+
+                drawStraight();
+                break;
+
+            case 2:
+
+                if (counter <= -2) {
+                    drawRight();
+                    counter = counter + 1;
+                    break;
+                } else {
+                    drawLeft();
+                    counter = counter - 1;
+                    break;
+                }
+                break;
+            case 3:
+
+                if (counter >= 2) {
+                    drawLeft();
+                    counter = counter - 1;
+                    break;
+                } else {
+                    drawRight();
+                    counter = counter + 1;
+                    break;
+                }
+            }
+
+
         }
 
         //left and right wall 
@@ -192,44 +273,63 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
+        function timer() {
+
+            highscore++;
+
+            document.getElementById("demo").innerHTML = highscore
+        }
+
         //key pressed
-        //TODO: seitliche Steuerung
+        //TODO: diagonale Steuerung
         function doKeyDown(e) {
             if (e.keyCode == 37) {
 
                 clearCanvas();
-                racerX = racerX - 10;
+                racerX = racerX - 5;
                 drawBackground();
                 drawLevelOne();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
+
             if (e.keyCode == 39) {
 
                 clearCanvas();
-                racerX = racerX + 10;
+                racerX = racerX + 5;
                 drawBackground();
                 drawLevelOne();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
+
             if (e.keyCode == 38) {
 
                 clearCanvas();
-                racerY = racerY - 10;
+                racerY = racerY - 5;
                 drawBackground();
                 drawLevelOne();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
+
             if (e.keyCode == 40) {
 
                 clearCanvas();
-                racerY = racerY + 10;
+                racerY = racerY + 5;
+                drawBackground();
+                drawLevelOne();
+                ctx.drawImage(racer, racerX, racerY, 40, 80);
+            }
+
+            if (e.keyCode == 38 && e.keyCode == 37) {
+
+                clearCanvas();
+                racerY = racerY + 5;
+                racerX = racerX - 5;
                 drawBackground();
                 drawLevelOne();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
         }
     </script>
-
 
 </body>
 
