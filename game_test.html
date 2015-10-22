@@ -13,10 +13,12 @@
 
 <body>
 
-    <input type="button" id="buttonOne" value="Level 1" onclick="analyzeLevel(this.value), timer(), highscore = 0">
-    <input type="button" id="buttonTwo" value="Level 2" onclick="analyzeLevel(this.value), timer(), highscore = 0">
-    <input type="button" id="buttonRandom" value="Level Random" onclick="analyzeLevel(this.value), window.setInterval(timer(), 1000), highscore = 0">
+    <input type="button" id="buttonOne" value="Level 1" onclick="analyzeLevel(this.value),">
+    <input type="button" id="buttonTwo" value="Level 2" onclick="analyzeLevel(this.value)">
+    <input type="button" id="buttonRandom" value="Level Random" onclick="analyzeLevel(this.value)">
     <input type="button" id="buttonStart" value="Start Level" onclick="analyzeLevel(this.value), window.setInterval(startLevel(), 1000)">
+    <input type="button" id="buttonStop" value="Stop Level" onclick="analyzeLevel(this.value), window.setInterval(startLevel(), 1000)">
+
 
     <h1 id="demo"></h1>
     <h2 id="zaehler"></h2>
@@ -77,24 +79,25 @@
             switch (myLevel) {
 
             case 'Level 1':
-
                 drawLevelOne();
                 break;
 
             case 'Level 2':
-
                 drawLevelTwo();
                 break;
 
             case 'Level Random':
-
                 drawLevelRandom();
                 break;
 
             case 'Start Level':
-
                 startLevel();
                 break;
+
+            case 'Stop Level':
+                stopLevel();
+                break;
+
             }
         }
 
@@ -140,8 +143,6 @@
         //level_Two Editor
         function drawLevelRandom() {
 
-            var now = new Date();
-            var second = now.getSeconds();
             h = 100;
             y = 0;
             var counter = 0;
@@ -151,9 +152,9 @@
             drawStraight();
 
 
-            for (var i = 0; i <= 3; i++) {
+            for (var i = 1; i <= 4; i++) {
 
-                drawRandom(counter);
+                counter = drawRandom(counter);
 
             }
 
@@ -169,13 +170,6 @@
             ctx.fillStyle = 'lightgray';
             ctx.fill();
             ctx.stroke();
-        }
-
-        function startLevel() {
-
-            clearCanvas();
-            h = h + 5;
-
         }
 
         //level-pattern straight
@@ -213,7 +207,6 @@
 
         function drawRandom(counter) {
 
-
             var x = Math.floor((Math.random() * 3) + 1);
 
             switch (x) {
@@ -234,9 +227,8 @@
                     counter = counter - 1;
                     break;
                 }
-                break;
-            case 3:
 
+            case 3:
                 if (counter >= 2) {
                     drawLeft();
                     counter = counter - 1;
@@ -248,7 +240,8 @@
                 }
             }
 
-
+            document.getElementById("zaehler").innerHTML = "Counter: " + counter;
+            return counter;
         }
 
         //left and right wall 
@@ -273,11 +266,11 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        function timer() {
+        function startLevel() {
 
             highscore++;
 
-            document.getElementById("demo").innerHTML = highscore
+            document.getElementById("demo").innerHTML = "Highscore: " + highscore;
         }
 
         //key pressed
