@@ -13,15 +13,17 @@
 
 <body>
 
-    <input type="button" id="buttonOne" value="Level 1" onclick="analyzeLevel(this.value),">
+    <input type="button" id="buttonOne" value="Level 1" onclick="analyzeLevel(this.value)">
     <input type="button" id="buttonTwo" value="Level 2" onclick="analyzeLevel(this.value)">
     <input type="button" id="buttonRandom" value="Level Random" onclick="analyzeLevel(this.value)">
-    <input type="button" id="buttonStart" value="Start Level" onclick="analyzeLevel(this.value), setInterval(startLevel(), 1000)">
-    <input type="button" id="buttonStop" value="Stop Level" onclick="analyzeLevel(this.value), setInterval(startLevel(), 1000)">
+    <input type="button" id="buttonStart" value="Start Level" onclick="analyzeLevel(this.value)">
+    <input type="button" id="buttonStop" value="Stop Level" onclick="analyzeLevel(this.value)">
 
 
     <h1 id="demo"></h1>
+
     <h2 id="zaehler"></h2>
+    <h3 id="collision"></h3>
 
     <canvas id="myCanvas" tabindex="0"></canvas>
 
@@ -41,6 +43,8 @@
 
         var racerX = 500;
         var racerY = 20;
+        var timer;
+        var highscore = 0;
 
         window.onload = function canvasRacerGame() {
 
@@ -88,9 +92,7 @@
                 break;
 
             case 'Start Level':
-
-                var highscore = 0;
-                setInterval(, 1000);
+                startLevel();
                 break;
 
             case 'Stop Level':
@@ -265,12 +267,52 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        function startLevel(highscore) {
+        function startLevel() {
+
+            highscore = 0;
+            timer = window.setInterval(highscoreFunction, 1000);
+
+        }
+
+
+        function highscoreFunction() {
 
             highscore = highscore + 1;
-
             document.getElementById("demo").innerHTML = "Highscore: " + highscore;
         }
+
+        function stopLevel() {
+
+            window.clearInterval(timer);
+        }
+
+
+        function collideTest() {
+
+            // Collision detection. Get a clip from the screen.
+            var clipWidth = 20;
+            var clipDepth = 20;
+            var clipLength = clipWidth * clipDepth;
+            // alert(clipLength);
+            var clipOffset = 5;
+            var whatColor = ctx.getImageData(shipX + clipOffset, shipY + clipOffset, clipWidth, clipDepth);
+
+            // Loop through the clip and see if you find red or blue. 
+            for (var i = 0; i < clipLength * 4; i += 4) {
+                if (whatColor.data[i] == 255) {
+                    alert("red");
+                    break;
+                }
+                // Second element is green but we don't care. 
+                if (whatColor.data[i + 2] == 255) {
+                    alert("blue");
+                    break;
+                }
+                // Fourth element is alpha and we don't care. 
+            }
+        }
+
+
 
         //key pressed
         //TODO: diagonale Steuerung
@@ -320,6 +362,8 @@
                 drawLevelOne();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
+
+            collideTest();
         }
     </script>
 
