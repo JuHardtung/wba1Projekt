@@ -16,13 +16,12 @@
     <input type="button" id="buttonOne" value="Level 1" onclick="analyzeLevel(this.value),">
     <input type="button" id="buttonTwo" value="Level 2" onclick="analyzeLevel(this.value)">
     <input type="button" id="buttonRandom" value="Level Random" onclick="analyzeLevel(this.value)">
-    <input type="button" id="buttonStart" value="Start Level" onclick="analyzeLevel(this.value), window.setInterval(startLevel(), 1000)">
-    <input type="button" id="buttonStop" value="Stop Level" onclick="analyzeLevel(this.value), window.setInterval(startLevel(), 1000)">
+    <input type="button" id="buttonStart" value="Start Level" onclick="analyzeLevel(this.value), setInterval(startLevel(), 1000)">
+    <input type="button" id="buttonStop" value="Stop Level" onclick="analyzeLevel(this.value), setInterval(startLevel(), 1000)">
 
 
     <h1 id="demo"></h1>
     <h2 id="zaehler"></h2>
-
 
     <canvas id="myCanvas" tabindex="0"></canvas>
 
@@ -42,8 +41,6 @@
 
         var racerX = 500;
         var racerY = 20;
-        highscore = 0;
-
 
         window.onload = function canvasRacerGame() {
 
@@ -91,7 +88,9 @@
                 break;
 
             case 'Start Level':
-                startLevel();
+
+                var highscore = 0;
+                setInterval(, 1000);
                 break;
 
             case 'Stop Level':
@@ -266,9 +265,9 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        function startLevel() {
+        function startLevel(highscore) {
 
-            highscore++;
+            highscore = highscore + 1;
 
             document.getElementById("demo").innerHTML = "Highscore: " + highscore;
         }
