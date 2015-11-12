@@ -13,17 +13,23 @@
 
 <body>
 
-    <input type="button" id="buttonOne" value="Level 1" onclick="analyzeLevel(this.value)">
+    <input type="button" id="buttonOne" value="Level 1" onclick="analyzelevel(.this.value)">
     <input type="button" id="buttonTwo" value="Level 2" onclick="analyzeLevel(this.value)">
     <input type="button" id="buttonRandom" value="Level Random" onclick="analyzeLevel(this.value)">
     <input type="button" id="buttonStart" value="Start Level" onclick="analyzeLevel(this.value)">
     <input type="button" id="buttonStop" value="Stop Level" onclick="analyzeLevel(this.value)">
+    <input type="button" id="buttonClear" value="Clear Level" onclick="clearCanvas()">
+    <input type="button" id="buttonBG" value="Draw Background" onclick="drawBackground()">
+
+
 
 
     <h1 id="demo"></h1>
 
     <h2 id="zaehler"></h2>
+    <h2 id="waende"></h2>
     <h3 id="collision"></h3>
+    <h3 id="movement"></h3>
 
     <canvas id="myCanvas" tabindex="0"></canvas>
 
@@ -43,6 +49,9 @@
 
         var racerX = 500;
         var racerY = 20;
+        var hoehe = 100
+        var h = 0;
+        var y = 0;
         var timer;
         var highscore = 0;
 
@@ -50,7 +59,6 @@
 
                 clearCanvas();
                 bildschirm();
-                drawBackground();
                 drawLevelOne();
 
                 ctx.drawImage(racer, 500, 20, 40, 80);
@@ -60,7 +68,7 @@
             }
             //FIXME: dynamische canvas Größe
         function bildschirm() {
-            ctx.canvas.width = window.innerWidth - 10;
+            ctx.canvas.width = window.innerWidth - 20;
             ctx.canvas.height = window.innerHeight - 40;
         }
 
@@ -105,7 +113,7 @@
         //level_One Editor
         function drawLevelOne() {
 
-            h = 100;
+            hoehe = 100;
             y = 0;
 
             clearCanvas();
@@ -116,16 +124,14 @@
                 drawLeft();
                 drawRight();
             }
-            ctx.drawImage(racer, canvas.width, 20, 40, 80);
-
+            drawRacer();
         }
 
         //level_Two Editor
         function drawLevelTwo() {
 
-            h = 100;
+            hoehe = 100;
             y = 0;
-
             clearCanvas();
             drawBackground();
             drawStraight();
@@ -136,15 +142,14 @@
                 drawRight();
                 drawLeft();
             }
-            ctx.drawImage(racer, canvas.width, 20, 40, 80);
-
+            drawRacer();
         }
 
 
         //level_Two Editor
         function drawLevelRandom() {
 
-            h = 100;
+            hoehe = 100;
             y = 0;
             var counter = 0;
 
@@ -155,11 +160,9 @@
 
             for (var i = 1; i <= 4; i++) {
 
-                counter = drawRandom(counter);
-
+                drawRandomNew();
             }
-
-            ctx.drawImage(racer, canvas.width, 20, 40, 80);
+            drawRacer();
 
         }
 
@@ -170,14 +173,17 @@
             ctx.rect((canvas.width - 500) / 2, 0, 500, canvas.height);
             ctx.fillStyle = 'lightgray';
             ctx.fill();
-            ctx.stroke();
+
+            //ctx.strokeRect((canvas.width - 500) / 2, 0, 500, canvas.height);
+            //ctx.lineWidth = 1;
+            //ctx.stroke();
         }
 
         //level-pattern straight
         function drawStraight() {
             for (var i = 1; i < 20; i++) {
 
-                h = h + 11;
+                hoehe = hoehe + 11;
 
                 drawWall(y, h);
             }
@@ -187,7 +193,7 @@
         function drawLeft() {
             for (var i = 1; i < 15; i++) {
 
-                h = h + 11;
+                hoehe = hoehe + 11;
                 y = y + 5;
 
                 drawWall(y, h);
@@ -198,7 +204,7 @@
         function drawRight() {
             for (var i = 1; i < 15; i++) {
 
-                h = h + 11;
+                hoehe = hoehe + 11;
                 y = y - 5;
 
                 drawWall(y, h);
@@ -240,26 +246,40 @@
                     break;
                 }
             }
-
             document.getElementById("zaehler").innerHTML = "Counter: " + counter;
             return counter;
+        }
+
+
+        function drawRandomNew(h) {
+
+            var xNEW = Math.floor((Math.random() * 5) - 5);
+
+            drawWall(xNEW, h);
+
+            document.getElementById("waende").innerHTML = "X: " + xNEW + "Y: " + h;
+
         }
 
         //left and right wall 
         function drawWall(y, h) {
 
             ctx.beginPath();
-            ctx.moveTo(canvas.width / 2 - 250, h);
-            ctx.lineTo(canvas.width / 2 - 50 - y, h);
+            ctx.moveTo((canvas.width / 2) - 250, hoehe + h);
+            ctx.lineTo((canvas.width / 2) - 50 - y, hoehe + h);
             ctx.strokeStyle = "black";
             ctx.lineWidth = "5";
             ctx.stroke();
 
             ctx.beginPath();
-            ctx.moveTo(canvas.width / 2 + 250, h);
-            ctx.lineTo(canvas.width / 2 + 50 - y, h);
+            ctx.moveTo(canvas.width / 2 + 250, hoehe + h);
+            ctx.lineTo(canvas.width / 2 + 50 - y, hoehe + h);
             ctx.strokeStyle = "black";
             ctx.stroke();
+        }
+
+        function drawRacer() {
+            ctx.drawImage(racer, racerX, racerY, 40, 80);
         }
 
         function clearCanvas() {
@@ -267,13 +287,22 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        function startLevel() {
+        function levelMovement() {
 
-            highscore = 0;
-            timer = window.setInterval(highscoreFunction, 1000);
-
+            h -= 1;
+            clearCanvas();
+            drawBackground();
+            drawRacer();
+            drawLevelTwo();
+            document.getElementById("movement").innerHTML = "Movement: " + h;
         }
 
+        function startLevel() {
+            highscore = 0;
+            h = 0;
+            timer = window.setInterval(highscoreFunction, 1000);
+            move = window.setInterval(levelMovement, 5);
+        }
 
         function highscoreFunction() {
 
@@ -284,86 +313,78 @@
         function stopLevel() {
 
             window.clearInterval(timer);
+            window.clearInterval(move);
         }
 
 
-        function collideTest() {
+        /* function collideTest() {
 
-            // Collision detection. Get a clip from the screen.
-            var clipWidth = 20;
-            var clipDepth = 20;
-            var clipLength = clipWidth * clipDepth;
-            // alert(clipLength);
-            var clipOffset = 5;
-            var whatColor = ctx.getImageData(shipX + clipOffset, shipY + clipOffset, clipWidth, clipDepth);
+             // Collision detection. Get a clip from the screen.
+             var clipWidth = 20;
+             var clipDepth = 20;
+             var clipLength = clipWidth * clipDepth;
+             // alert(clipLength);
+             var clipOffset = 5;
+             var whatColor = ctx.getImageData(shipX + clipOffset, shipY + clipOffset, clipWidth, clipDepth);
 
-            // Loop through the clip and see if you find red or blue. 
-            for (var i = 0; i < clipLength * 4; i += 4) {
-                if (whatColor.data[i] == 255) {
-                    alert("red");
-                    break;
-                }
-                // Second element is green but we don't care. 
-                if (whatColor.data[i + 2] == 255) {
-                    alert("blue");
-                    break;
-                }
-                // Fourth element is alpha and we don't care. 
-            }
-        }
+             // Loop through the clip and see if you find red or blue. 
+             for (var i = 0; i < clipLength * 4; i += 4) {
+                 if (whatColor.data[i] == 255) {
+                     alert("red");
+                     break;
+                 }
+                 // Second element is green but we don't care. 
+                 if (whatColor.data[i + 2] == 255) {
+                     alert("blue");
+                     break;
+                 }
+                 // Fourth element is alpha and we don't care. 
+             }
+         }*/
 
 
 
         //key pressed
-        //TODO: diagonale Steuerung
-        function doKeyDown(e) {
-            if (e.keyCode == 37) {
 
+
+
+
+        function doKeyDown(e) {
+
+            //X-Axis movement
+            if (e.keyCode == 37) {
                 clearCanvas();
-                racerX = racerX - 5;
+                racerX = racerX - 10;
                 drawBackground();
-                drawLevelOne();
+                drawLevelTwo();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
 
             if (e.keyCode == 39) {
-
                 clearCanvas();
-                racerX = racerX + 5;
+                racerX = racerX + 10;
                 drawBackground();
-                drawLevelOne();
+                drawLevelTwo();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
 
-            if (e.keyCode == 38) {
 
+            //movement on y-axis is not nedded
+            /*if (e.keyCode == 38) {
                 clearCanvas();
-                racerY = racerY - 5;
+                racerY = racerY - 10;
                 drawBackground();
-                drawLevelOne();
+                drawLevelTwo();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
 
             if (e.keyCode == 40) {
-
                 clearCanvas();
-                racerY = racerY + 5;
+                racerY = racerY + 10;
                 drawBackground();
-                drawLevelOne();
+                drawLevelTwo();
                 ctx.drawImage(racer, racerX, racerY, 40, 80);
-            }
-
-            if (e.keyCode == 38 && e.keyCode == 37) {
-
-                clearCanvas();
-                racerY = racerY + 5;
-                racerX = racerX - 5;
-                drawBackground();
-                drawLevelOne();
-                ctx.drawImage(racer, racerX, racerY, 40, 80);
-            }
-
-            collideTest();
+            }*/
         }
     </script>
 
