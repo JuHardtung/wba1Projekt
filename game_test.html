@@ -3,37 +3,141 @@
 <html>
 
 <head>
-    <style>
-        body {
-            margin: 0px;
-            padding: 0px;
+
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        #menu,
+        input {
+            width: 100%;
+            background: #c7c7c7;
+            font-family: Verdana;
+            font-size: 1em;
+            line-height: 1.5;
+            float: left;
+        }
+        
+        #menu ul {
+            float: left;
+            width: 140px;
+            list-style-type: none;
+        }
+        /*--definiert die Block&uuml;berschriften--*/
+        
+        #menu h3 {
+            font-size: 1em;
+            text-align: center;
+            color: #fff;
+            background: #787878;
+        }
+        /*--definiert die "Drop-Down-Links" im Normalzustand--*/
+        
+        #menu input {
+            display: block;
+            border: 1px solid #ccc;
+            text-align: center;
+            background: #787878;
+            color: #fff;
+            font-weight: bold;
+        }
+        /*--definiert die "Drop-Down-Links" im Hoverzustand--*/
+        
+        #menu input:hover {
+            color: #787878;
+            background: #bababa;
+        }
+        /*verhindert im Zusammenhang mit position absolute bei ul ul
+*eine H&ouml;henvergr&ouml;&szlig;erung von #menu beim Hovern--
+*/
+        
+        #menu li {
+            position: relative;
+        }
+        /*--versteckt die "Drop-Down-Links", solange nicht gehovert wird--*/
+        
+        #menu ul ul {
+            position: absolute;
+            z-index: 2;
+            display: none;
+        }
+        /*--l&auml;sst die Dropdown-Links beim Hovern erscheinen--*/
+        
+        #menu ul li:hover ul {
+            display: block;
         }
     </style>
 </head>
 
 <body>
+    <div id="menu">
+        <ul>
+            <li>
+                <h3>Levelauswahl</h3>
+                <ul>
 
-    <input type="button" id="buttonOne" value="Level 1" onclick="analyzelevel(.this.value)">
-    <input type="button" id="buttonTwo" value="Level 2" onclick="analyzeLevel(this.value)">
-    <input type="button" id="buttonRandom" value="Level Random" onclick="analyzeLevel(this.value)">
+                    <li>
+                        <input type="button" id="buttonOne" value="Level 1" onclick="analyzeLevel(this.value), h = 0">
+                    </li>
+                    <li>
+                        <input type="button" id="buttonTwo" value="Level 2" onclick="analyzeLevel(this.value), h = 0">
+                    </li>
+                    <li>
+                        <input type="button" id="buttonRandom" value="Level Random" onclick="analyzeLevel(this.value), h = 0">
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <ul>
+            <li>
+                <h3>Autoauswahl</h3>
+                <ul>
+
+                    <li>
+                        <input type="button" id="batmanCar" value="Batman" onclick="batmanCar()">
+                    </li>
+                    <li>
+                        <input type="button" id="redCar" value="Red Car" onclick="redCar()">
+                    </li>
+                    <li>
+                        <input type="button" id="blueCar" value="Blue Car" onclick="blueCar()">
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <ul>
+            <li>
+                <input type="button" id="buttonStart" value="Start Level" onclick="analyzeLevel(this.value)">
+
+            </li>
+        </ul>
+
+        <ul>
+            <li>
+                <input type="button" id="buttonStop" value="Stop Level" onclick="analyzeLevel(this.value)">
+
+            </li>
+        </ul>
+
+
+
+    </div>
+
+    <!-- <input type="button" id="buttonOne" value="Level 1" onclick="analyzeLevel(this.value), h = 0">
+    <input type="button" id="buttonTwo" value="Level 2" onclick="analyzeLevel(this.value), h = 0">
+    <input type="button" id="buttonRandom" value="Level Random" onclick="analyzeLevel(this.value), h = 0">
     <input type="button" id="buttonStart" value="Start Level" onclick="analyzeLevel(this.value)">
     <input type="button" id="buttonStop" value="Stop Level" onclick="analyzeLevel(this.value)">
     <input type="button" id="buttonClear" value="Clear Level" onclick="clearCanvas()">
-    <input type="button" id="buttonBG" value="Draw Background" onclick="drawBackground()">
+    <input type="button" id="buttonBG" value="Draw Background" onclick="drawBackground()">-->
 
-
-
-
-    <h1 id="demo"></h1>
-
-    <h2 id="zaehler"></h2>
-    <h2 id="waende"></h2>
-    <h3 id="collision"></h3>
-    <h3 id="movement"></h3>
+    <h1 id="highscore"></h1>
 
     <canvas id="myCanvas" tabindex="0"></canvas>
 
-    <!-- TODO: Highscore-->
     <!-- TODO: Kollisionsabfrage-->
     <!-- TODO: Levelmovement-->
     <!-- TODO: Schwierigkeitsgrad-->
@@ -45,57 +149,66 @@
 
 
         var racer = new Image();
-        racer.src = "Racer.png";
+        racer.src = "Batmobile.png";
 
-        var racerX = 500;
+        var racerX = 0;
         var racerY = 20;
-        var hoehe = 100
+        var wallX = 0;
+        var wallY = 100;
         var h = 0;
-        var y = 0;
         var timer;
         var highscore = 0;
+        var wallXnew = new Array();
+        var wallYnew = new Array();
+        var actLevel = '';
+
+        var introMusic = new Audio('Intro.mp3');
+        var muscicPlay = true;
+
 
         window.onload = function canvasRacerGame() {
 
-                clearCanvas();
-                bildschirm();
-                drawLevelOne();
 
-                ctx.drawImage(racer, 500, 20, 40, 80);
-
-                canvas.addEventListener('keydown', doKeyDown, true);
-
-            }
-            //FIXME: dynamische canvas Größe
-        function bildschirm() {
             ctx.canvas.width = window.innerWidth - 20;
-            ctx.canvas.height = window.innerHeight - 40;
+            ctx.canvas.height = window.innerHeight - 125;
+
+            racerX = (canvas.width / 2) - 20;
+
+            canvas.addEventListener('keydown', doKeyDown, true);
+
+            introMusic.play();
+
+            setInterval(function () {
+                rendering();
+            }, (10));
+
         }
 
-        /*function showCoords(event) {
 
-            var x = event.clientX;
-            var y = event.clientY;
-            var coords = "X coords: " + x + "Y coords: " + y;
+        function rendering() {
+            clearCanvas();
+            drawBackground();
+            drawRacer();
+            analyzeLevel(actLevel);
+            collideTest();
+        }
 
-            document.getElementById("demo").innerHTML = coords
-        }*/
-
-
-        //FIXME: doppelte Ränder
         function analyzeLevel(myLevel) {
 
             switch (myLevel) {
 
             case 'Level 1':
+                actLevel = 'Level 1';
                 drawLevelOne();
                 break;
 
             case 'Level 2':
+                actLevel = 'Level 2';
                 drawLevelTwo();
                 break;
 
             case 'Level Random':
+                actLevel = 'Level Random';
                 drawLevelRandom();
                 break;
 
@@ -110,51 +223,97 @@
             }
         }
 
-        //level_One Editor
         function drawLevelOne() {
 
-            hoehe = 100;
-            y = 0;
+            wallXnew[0] = 0;
+            wallYnew[0] = 100;
 
-            clearCanvas();
-            drawBackground();
-            drawStraight();
 
-            for (var i = 0; i < 1; i++) {
-                drawLeft();
-                drawRight();
+            //30 walls straight
+            for (var i = 1; i < 31; i++) {
+
+                wallXnew[i] = 0;
+                wallYnew[i] = wallYnew[i - 1] + 11;
+                drawWall(wallXnew[i], wallYnew[i]);
             }
-            drawRacer();
+            //20 walls left
+            for (var i = 31; i < 50; i++) {
+
+                wallXnew[i] = wallXnew[i - 1] + 5;
+                wallYnew[i] = wallYnew[i - 1] + 11;
+                drawWall(wallXnew[i], wallYnew[i]);
+            }
         }
 
-        //level_Two Editor
         function drawLevelTwo() {
 
-            hoehe = 100;
-            y = 0;
-            clearCanvas();
-            drawBackground();
-            drawStraight();
+            wallXnew[0] = 0;
+            wallYnew[0] = 100;
 
-            for (var i = 0; i < 1; i++) {
-                drawLeft();
-                drawLeft();
-                drawRight();
-                drawLeft();
+
+            //30 walls straight
+            for (var i = 1; i < 31; i++) {
+
+                wallXnew[i] = 0;
+                wallYnew[i] = wallYnew[i - 1] + 11;
+                drawWall(wallXnew[i], wallYnew[i]);
             }
-            drawRacer();
+            //20 walls left
+            for (var i = 31; i < 51; i++) {
+
+                wallXnew[i] = wallXnew[i - 1] + 5;
+                wallYnew[i] = wallYnew[i - 1] + 11;
+                drawWall(wallXnew[i], wallYnew[i]);
+            }
+            // 30 walls right
+            for (var i = 51; i < 81; i++) {
+
+                wallXnew[i] = wallXnew[i - 1] - 5;
+                wallYnew[i] = wallYnew[i - 1] + 11;
+                drawWall(wallXnew[i], wallYnew[i]);
+            }
+
+            //20 walls left
+            for (var i = 81; i < 101; i++) {
+
+                wallXnew[i] = wallXnew[i - 1] + 5;
+                wallYnew[i] = wallYnew[i - 1] + 11;
+                drawWall(wallXnew[i], wallYnew[i]);
+            }
         }
 
 
-        //level_Two Editor
+        //FIXME random function
         function drawLevelRandom() {
 
-            hoehe = 100;
-            y = 0;
+            wallXnew[0] = 0;
+            wallYnew[0] = 100;
+
+            //30 walls straight
+            for (var i = 1; i < 31; i++) {
+
+                wallXnew[i] = 0;
+                wallYnew[i] = wallYnew[i - 1] + 11;
+                drawWall(wallXnew[i], wallYnew[i]);
+            }
+            //20 walls left
+            for (var i = 31; i < 50; i++) {
+
+                var xNEW = Math.floor((Math.random() * 10) - 5);
+
+                wallXnew[i] = wallXnew[i - 1] + xNEW;
+                wallYnew[i] = wallYnew[i - 1] + 11;
+                drawWall(wallXnew[i], wallYnew[i]);
+            }
+        }
+
+        //level_Two Editor
+        function drawLevelRandoddm() {
+
+            wallX = 0;
+            wallY = 100;
             var counter = 0;
 
-            clearCanvas();
-            drawBackground();
             drawStraight();
 
 
@@ -166,50 +325,37 @@
 
         }
 
+        /*      //level-pattern straight
+              function drawStraight() {
+                  for (var i = 1; i < 20; i++) {
 
-        function drawBackground() {
+                      wallY = wallY + 11;
 
-            ctx.beginPath();
-            ctx.rect((canvas.width - 500) / 2, 0, 500, canvas.height);
-            ctx.fillStyle = 'lightgray';
-            ctx.fill();
+                      drawWall(wallX, wallY);
+                  }
+              }
 
-            //ctx.strokeRect((canvas.width - 500) / 2, 0, 500, canvas.height);
-            //ctx.lineWidth = 1;
-            //ctx.stroke();
-        }
+              //level-pattern to left
+              function drawLeft() {
+                  for (var i = 1; i < 15; i++) {
 
-        //level-pattern straight
-        function drawStraight() {
-            for (var i = 1; i < 20; i++) {
+                      wallY = wallY + 11;
+                      wallX = wallX + 5;
 
-                hoehe = hoehe + 11;
+                      drawWall(wallX, wallY);
+                  }
+              }
 
-                drawWall(y, h);
-            }
-        }
+              //level-pattern to right
+              function drawRight() {
+                  for (var i = 1; i < 15; i++) {
 
-        //level-pattern to left
-        function drawLeft() {
-            for (var i = 1; i < 15; i++) {
+                      wallY = wallY + 11;
+                      wallX = wallX - 5;
 
-                hoehe = hoehe + 11;
-                y = y + 5;
-
-                drawWall(y, h);
-            }
-        }
-
-        //level-pattern to right
-        function drawRight() {
-            for (var i = 1; i < 15; i++) {
-
-                hoehe = hoehe + 11;
-                y = y - 5;
-
-                drawWall(y, h);
-            }
-        }
+                      drawWall(wallX, wallY);
+                  }
+              }
 
 
         function drawRandom(counter) {
@@ -248,142 +394,137 @@
             }
             document.getElementById("zaehler").innerHTML = "Counter: " + counter;
             return counter;
-        }
+        }*/
 
+        function drawBackground() {
 
-        function drawRandomNew(h) {
-
-            var xNEW = Math.floor((Math.random() * 5) - 5);
-
-            drawWall(xNEW, h);
-
-            document.getElementById("waende").innerHTML = "X: " + xNEW + "Y: " + h;
-
+            ctx.beginPath();
+            ctx.rect((canvas.width - 500) / 2, 0, 500, canvas.height);
+            ctx.fillStyle = 'lightgray';
+            ctx.fill();
         }
 
         //left and right wall 
-        function drawWall(y, h) {
+        function drawWall(wallX, wallY) {
 
             ctx.beginPath();
-            ctx.moveTo((canvas.width / 2) - 250, hoehe + h);
-            ctx.lineTo((canvas.width / 2) - 50 - y, hoehe + h);
+            ctx.moveTo((canvas.width / 2) - 250, wallY + h);
+            ctx.lineTo((canvas.width / 2) - 50 - wallX, wallY + h);
             ctx.strokeStyle = "black";
             ctx.lineWidth = "5";
             ctx.stroke();
 
             ctx.beginPath();
-            ctx.moveTo(canvas.width / 2 + 250, hoehe + h);
-            ctx.lineTo(canvas.width / 2 + 50 - y, hoehe + h);
-            ctx.strokeStyle = "black";
+            ctx.moveTo(canvas.width / 2 + 250, wallY + h);
+            ctx.lineTo(canvas.width / 2 + 50 - wallX, wallY + h);
             ctx.stroke();
         }
 
+
+        function drawLevelFailed() {
+
+            ctx.beginPath();
+            ctx.rect(50, 50, 300, 100);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+
+            ctx.font = "50px Arial";
+            ctx.fillStyle = "white";
+            ctx.fillText("You failed!", 100, 100);
+
+        }
+
         function drawRacer() {
-            ctx.drawImage(racer, racerX, racerY, 40, 80);
+            ctx.drawImage(racer, racerX, racerY, 35, 70);
         }
 
         function clearCanvas() {
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
         function levelMovement() {
-
             h -= 1;
-            clearCanvas();
-            drawBackground();
-            drawRacer();
-            drawLevelTwo();
-            document.getElementById("movement").innerHTML = "Movement: " + h;
         }
 
         function startLevel() {
             highscore = 0;
             h = 0;
             timer = window.setInterval(highscoreFunction, 1000);
-            move = window.setInterval(levelMovement, 5);
+            move = window.setInterval(levelMovement, 10);
+
+            if (muscicPlay == false) {
+                introMusic.currentTime = 0.0;
+                introMusic.play();
+                muscicPlay == true;
+            }
         }
 
         function highscoreFunction() {
 
             highscore = highscore + 1;
-            document.getElementById("demo").innerHTML = "Highscore: " + highscore;
+            document.getElementById("highscore").innerHTML = "Highscore: " + highscore;
         }
 
         function stopLevel() {
 
             window.clearInterval(timer);
             window.clearInterval(move);
+            introMusic.pause();
+            muscicPlay = false;
         }
 
 
-        /* function collideTest() {
+        //FIXME collision test with moving walls
+        function collideTest() {
 
-             // Collision detection. Get a clip from the screen.
-             var clipWidth = 20;
-             var clipDepth = 20;
-             var clipLength = clipWidth * clipDepth;
-             // alert(clipLength);
-             var clipOffset = 5;
-             var whatColor = ctx.getImageData(shipX + clipOffset, shipY + clipOffset, clipWidth, clipDepth);
+            if (((canvas.width / 2) - 50 - wallX) >= (racerX)) {
 
-             // Loop through the clip and see if you find red or blue. 
-             for (var i = 0; i < clipLength * 4; i += 4) {
-                 if (whatColor.data[i] == 255) {
-                     alert("red");
-                     break;
-                 }
-                 // Second element is green but we don't care. 
-                 if (whatColor.data[i + 2] == 255) {
-                     alert("blue");
-                     break;
-                 }
-                 // Fourth element is alpha and we don't care. 
-             }
-         }*/
+                drawLevelFailed();
+                stopLevel();
+            } else if ((canvas.width / 2 + 50 - wallX) <= (racerX + 35)) {
 
+                drawLevelFailed();
+                stopLevel();
+            } else if (((canvas.width / 2) - 50 - wallX) <= (racerX - 5) || (canvas.width / 2 + 50 - wallX) >= (racerX + 5)) {
 
+            }
+
+        }
+
+        function batmanCar() {
+
+            racer.src = "Batmobile.png";
+        }
+
+        function redCar() {
+
+            racer.src = "Racer2.png";
+        }
+
+        function blueCar() {
+
+            racer.src = "Racer.png";
+        }
 
         //key pressed
-
-
-
-
         function doKeyDown(e) {
 
             //X-Axis movement
             if (e.keyCode == 37) {
-                clearCanvas();
                 racerX = racerX - 10;
-                drawBackground();
-                drawLevelTwo();
-                ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
 
             if (e.keyCode == 39) {
-                clearCanvas();
                 racerX = racerX + 10;
-                drawBackground();
-                drawLevelTwo();
-                ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
 
-
-            //movement on y-axis is not nedded
+            //movement on y-axis is not needed            
             /*if (e.keyCode == 38) {
-                clearCanvas();
                 racerY = racerY - 10;
-                drawBackground();
-                drawLevelTwo();
-                ctx.drawImage(racer, racerX, racerY, 40, 80);
             }
 
             if (e.keyCode == 40) {
-                clearCanvas();
                 racerY = racerY + 10;
-                drawBackground();
-                drawLevelTwo();
-                ctx.drawImage(racer, racerX, racerY, 40, 80);
             }*/
         }
     </script>
