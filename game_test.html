@@ -16,10 +16,10 @@
                 <li>
                     <a href="">Levelauswahl</a>
                     <ul>
-                        <li><a id="buttonOne" onclick="analyzeLevel('Level 1')">Level 1</a></li>
-                        <li><a id="buttonTwo" onclick="analyzeLevel('Level 2')">Level 2</a></li>
-                        <li><a id="buttonRandom" onclick="calcLevelRandom(), analyzeLevel('Level Random')">Level Random</a></li>
-                        <li><a id="buttonHardcore" onclick="calcLevelHardcore(), analyzeLevel('Level Hardcore')">Hardcore</a></li>
+                        <li><a id="buttonOne" onclick="calcLevelOne(), actLevel = 0;">Level 1</a></li>
+                        <li><a id="buttonTwo" onclick="calcLevelTwo(), actLevel = 0">Level 2</a></li>
+                        <li><a id="buttonRandom" onclick="calcLevelRandom(), actLevel = 0">Level Random</a></li>
+                        <li><a id="buttonHardcore" onclick="calcLevelHardcore(), actLevel = 0">Hardcore</a></li>
                     </ul>
                 </li>
                 <li>
@@ -30,9 +30,9 @@
                         <li><a onclick="blueCar()">Blue Car</a></li>
                     </ul>
                 </li>
-                <li><a id="buttonStart" onclick="analyzeLevel('Start Level')">Start Level</a></li>
+                <li><a id="buttonStart" onclick="startLevel()">Start Level</a></li>
 
-                <li><a id="buttonStop" onclick="analyzeLevel('Stop Level')">Stop Level</a></li>
+                <li><a id="buttonStop" onclick="stopLevel()">Stop Level</a></li>
 
                 <li><a id="buttonCredits" onclick="analyzeLevel('Credits')">Credits</a></li>
 

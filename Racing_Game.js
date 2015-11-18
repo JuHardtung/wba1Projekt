@@ -9,17 +9,19 @@
   var highscore = 0;
   var timer = undefined;
   var move = undefined;
-  var wallX = new Array();
-  var wallY = new Array();
+  var wallX = [];
+  var wallY = [];
   var actLevel = '';
 
   var introMusic = new Audio('Intro.mp3');
   var muscicPlay = true;
   var hardcore = 0;
+  var endless = 20;
 
   var leftMove = false;
   var rightMove = false;
   var levelFailed = false;
+  var levelStarted = false;
 
   window.onload = function canvasRacerGame() {
 
@@ -32,7 +34,7 @@
       canvas.addEventListener('keyup', doKeyUp, true);
 
       levelFailed = true;
-      //introMusic.play();
+      introMusic.play();
 
       setInterval(function () {
           rendering();
@@ -61,32 +63,11 @@
   function analyzeLevel(myLevel) {
 
       switch (myLevel) {
-
-      case 'Level 1':
-          actLevel = 'Level 1';
-          calcLevelOne();
-          break;
-
-      case 'Level 2':
-          actLevel = 'Level 2';
-          calcLevelTwo();
-          break;
-
-      case 'Level Random':
-          actLevel = 'Level Random';
-          break;
-
       case 'Credits':
           actLevel = 'Credits';
           drawCredits();
           break;
-
-      case 'Start Level':
-          startLevel();
-          break;
-
-      case 'Stop Level':
-          stopLevel();
+      default:
           break;
       }
   }
@@ -100,16 +81,27 @@
       var i = 1;
 
       //30 walls straight
-      for (i; i < 41; i++) {
+      for (i; i < 40; i++) {
 
           wallX[i] = 0;
           wallY[i] = wallY[i - 1] + 10;
       }
       //20 walls left
-      for (i; i < 50; i++) {
+      for (i; i < 70; i++) {
           wallX[i] = wallX[i - 1] + 5;
           wallY[i] = wallY[i - 1] + 10;
       }
+      //20 walls right
+      for (i; i < 100; i++) {
+          wallX[i] = wallX[i - 1] - 5;
+          wallY[i] = wallY[i - 1] + 10;
+      }
+      //20 walls left
+      for (i; i < 120; i++) {
+          wallX[i] = wallX[i - 1] + 5;
+          wallY[i] = wallY[i - 1] + 10;
+      }
+
   }
 
   function calcLevelTwo() {
@@ -193,6 +185,7 @@
       }
   }
 
+
   function calcLevelHardcore() {
 
       wallX.length = 0;
@@ -203,7 +196,7 @@
       var i = 1;
       var iOld = 0;
       //30 walls straight
-      for (i; i < 41; i++) {
+      for (i; i < 40; i++) {
 
           wallX[i] = 0;
           wallY[i] = wallY[i - 1] + 10;
@@ -211,21 +204,13 @@
       }
 
       iOld = i;
+
       //20 walls random
+      for (var w = 1; w < 5; w++) {
 
-      for (var w = 0; w < 20; w++) {
+          hardcore = Math.floor(highscore / 10) + 3;
 
-
-          hardcore = Math.floor(highscore / 10);
-          switch (posOrNeg) {
-          case 1:
-              var xNEW = Math.floor((Math.random() * (5 - 1) + 1));
-              break;
-          case 2:
-              var xNEW = Math.floor((Math.random() * (-1 - (-5)) - 5));
-              break;
-          }
-
+          var xNEW = Math.floor((Math.random() * (hardcore - (-hardcore)) + (-hardcore)));
 
           for (i; i < iOld + 20; i++) {
               if (wallX[i - 1] + xNEW >= 160) {
@@ -260,22 +245,27 @@
 
   function drawLevelFailed() {
 
-      ctx.rect(50, 50, 300, 100);
+      ctx.rect(50, 50, 400, 100);
       ctx.fillStyle = 'red';
       ctx.fill();
 
       ctx.fillStyle = "white";
-      ctx.fillText("You failed!", 70, 100);
+      ctx.font = "32px Press Start 2P";
+      ctx.fillText("You failed!", 70, 115);
   }
 
   function drawLevelWon() {
 
-      ctx.rect(50, 50, 300, 100);
-      ctx.fillStyle = 'green';
-      ctx.fill();
 
-      ctx.fillStyle = "white";
-      ctx.fillText("You won!", 70, 100);
+      if (levelStarted === true) {
+          ctx.rect(50, 50, 400, 100);
+          ctx.fillStyle = 'green';
+          ctx.fill();
+
+          ctx.fillStyle = "white";
+          ctx.font = "32px Press Start 2P";
+          ctx.fillText("You won!", 70, 115);
+      }
   }
 
   function drawCredits() {
@@ -304,9 +294,10 @@
   function drawRacer() {
       ctx.drawImage(racer, racerX, racerY, 25, 50);
   }
-
+  //FIXME racer reset after levelFailed
   function resetRacer() {
       racerX = (canvas.width / 2) - 20;
+      racerY = 20;
   }
 
   function clearCanvas() {
@@ -321,13 +312,48 @@
           wallX[i] = wallX[i + 1];
       }
 
-      if (wallY.length === 0) {
+
+      if (wallX[119] === undefined) {
+          // for (var w = 0; w < 10; w++) {
+          iOld = 120;
+
+
+          hardcore = Math.floor(highscore / 10) + 3;
+          var xNEW = randomXNEW();
+
+          for (i = 119; i < iOld + 20; i++) {
+              if (wallX[i - 1] + xNEW >= 160) {
+                  xNEW = -1 * xNEW;
+              } else if (wallX[i - 1] + xNEW <= -160) {
+                  xNEW = Math.abs(xNEW);
+              }
+              wallX[i] = wallX[i - 1] + xNEW;
+              wallY[i] = wallY[i - 1] + 10;
+          }
+          iOld = i;
+          // }
+      }
+
+      /*  if (wallY.length === 0) {
 
           stopLevel();
       } else {
           wallY.length = wallY.length - 1;
           wallX.length = wallX.length - 1;
+      }*/
+  }
+
+  function randomXNEW() {
+      if (hardcore >= 4) {
+          var krass = Math.floor((Math.random() * (hardcore - (-hardcore)) + (-hardcore)));
+          return (krass === 0 || krass === 1 || krass === -1 || krass === 2 || krass === -2) ? randomXNEW() : krass;
+
+      } else {
+          var krass = Math.floor((Math.random() * (hardcore - (-hardcore)) + (-hardcore)));
+          return krass;
+
       }
+
   }
 
   function startLevel() {
@@ -335,6 +361,7 @@
       timer = window.setInterval(highscoreFunction, 1000);
       move = window.setInterval(levelMovement, 100);
       levelFailed = false;
+      levelStarted = true;
 
       if (muscicPlay === false) {
           introMusic.currentTime = 0.0;
@@ -355,10 +382,10 @@
       window.clearInterval(move);
       introMusic.pause();
       muscicPlay = false;
+      levelStarted = false;
   }
 
-
-  //FIXME collision test with moving walls
+  //FIXME levelOne() triggering
   function collideTest() {
 
       //collision test bottom side of the car
@@ -386,6 +413,10 @@
 
           levelFailed = true;
           drawLevelFailed();
+          stopLevel();
+      } else if (wallX.length === 0) {
+          levelFailed = true;
+          drawLevelWon();
           stopLevel();
       }
 
