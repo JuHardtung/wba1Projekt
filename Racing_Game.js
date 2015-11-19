@@ -16,7 +16,6 @@
   var introMusic = new Audio('Intro.mp3');
   var muscicPlay = true;
   var hardcore = 0;
-  var endless = 20;
 
   var leftMove = false;
   var rightMove = false;
@@ -35,6 +34,7 @@
 
       levelFailed = true;
       introMusic.play();
+      calcLevelOne();
 
       setInterval(function () {
           rendering();
@@ -79,6 +79,7 @@
       wallX[0] = 0;
       wallY[0] = 0;
       var i = 1;
+      resetRacer();
 
       //30 walls straight
       for (i; i < 40; i++) {
@@ -96,12 +97,6 @@
           wallX[i] = wallX[i - 1] - 5;
           wallY[i] = wallY[i - 1] + 10;
       }
-      //20 walls left
-      for (i; i < 120; i++) {
-          wallX[i] = wallX[i - 1] + 5;
-          wallY[i] = wallY[i - 1] + 10;
-      }
-
   }
 
   function calcLevelTwo() {
@@ -111,6 +106,7 @@
       wallX[0] = 0;
       wallY[0] = 0;
       var i = 1;
+      resetRacer();
 
       //30 walls straight
       for (i; i < 21; i++) {
@@ -148,11 +144,12 @@
 
       var i = 1;
       var iOld = 0;
+      resetRacer();
       //30 walls straight
-      for (i; i < 41; i++) {
+      for (i; i < 40; i++) {
 
           wallX[i] = 0;
-          wallY[i] = wallY[i - 1] + 10;
+          wallY[i] = wallY[i - 1];
           drawWall(wallX[i], wallY[i]);
       }
 
@@ -195,6 +192,7 @@
 
       var i = 1;
       var iOld = 0;
+      resetRacer();
       //30 walls straight
       for (i; i < 40; i++) {
 
@@ -225,6 +223,24 @@
       }
   }
 
+  function randomXNEW() {
+      if (hardcore >= 4) {
+          var xNEW = Math.floor((Math.random() * (hardcore - (-hardcore)) + (-hardcore)));
+          return (xNEW === 0 || xNEW === 1 || xNEW === -1 || xNEW === 2 || xNEW === -2) ? randomXNEW() : xNEW;
+
+      } else if (hardcore >= 5) {
+          var xNEW = Math.floor((Math.random() * (hardcore - (-hardcore)) + (-hardcore)));
+          return (xNEW === 0 || xNEW === 1 || xNEW === -1 || xNEW === 2 || xNEW === -2 || xNEW === 3 || xNEW === -3) ? randomXNEW() : xNEW;
+
+      } else if (hardcore >= 6) {
+          var xNEW = Math.floor((Math.random() * (hardcore - (-hardcore)) + (-hardcore)));
+          return (xNEW === 0 || xNEW === 1 || xNEW === -1 || xNEW === 2 || xNEW === -2 || xNEW === 3 || xNEW === -3 || xNEW === 4 || xNEW === -4) ? randomXNEW() : xNEW;
+
+      } else {
+          var xNEW = Math.floor((Math.random() * (hardcore - (-hardcore)) + (-hardcore)));
+          return xNEW;
+      }
+  }
 
   //left and right wall 
   function drawWall(wallX, wallY) {
@@ -256,16 +272,14 @@
 
   function drawLevelWon() {
 
+      ctx.rect(50, 50, 400, 100);
+      ctx.fillStyle = 'green';
+      ctx.fill();
 
-      if (levelStarted === true) {
-          ctx.rect(50, 50, 400, 100);
-          ctx.fillStyle = 'green';
-          ctx.fill();
+      ctx.fillStyle = "white";
+      ctx.font = "32px Press Start 2P";
+      ctx.fillText("You won!", 70, 115);
 
-          ctx.fillStyle = "white";
-          ctx.font = "32px Press Start 2P";
-          ctx.fillText("You won!", 70, 115);
-      }
   }
 
   function drawCredits() {
@@ -277,27 +291,24 @@
       ctx.fill();
 
       ctx.fillStyle = 'white';
-      ctx.font = '16 px Press Start 2P';
+      ctx.font = "16 px Press Start 2P";
       ctx.fillText("Programming:", (canvas.width - 475) / 2, canvas.height / 2 - 100);
       ctx.fillText("Julian Hardtung ", (canvas.width - 250) / 2, canvas.height / 2 + -75);
       ctx.fillText("Background Music:", (canvas.width - 475) / 2, canvas.height / 2 - 45);
       ctx.fillText("Erik Skiff-HHavok-intro", (canvas.width - 250) / 2, canvas.height / 2 - 15);
 
-
-      ctx.font = '8 px Press Start 2P';
+      ctx.font = "8 px Press Start 2P";
       ctx.fillText("Ein Projekt im Rahmen des", (canvas.width - 475) / 2, canvas.height / 2 + 300);
       ctx.fillText("Web-basierte-Anwendungen Moduls der", (canvas.width - 475) / 2, canvas.height / 2 + 320);
       ctx.fillText("Technischen Hochschule Koeln Campus Gummersbach", (canvas.width - 475) / 2, canvas.height / 2 + 340);
-
   }
 
   function drawRacer() {
       ctx.drawImage(racer, racerX, racerY, 25, 50);
   }
-  //FIXME racer reset after levelFailed
+
   function resetRacer() {
       racerX = (canvas.width / 2) - 20;
-      racerY = 20;
   }
 
   function clearCanvas() {
@@ -312,11 +323,8 @@
           wallX[i] = wallX[i + 1];
       }
 
-
       if (wallX[119] === undefined) {
-          // for (var w = 0; w < 10; w++) {
           iOld = 120;
-
 
           hardcore = Math.floor(highscore / 10) + 3;
           var xNEW = randomXNEW();
@@ -331,7 +339,6 @@
               wallY[i] = wallY[i - 1] + 10;
           }
           iOld = i;
-          // }
       }
 
       /*  if (wallY.length === 0) {
@@ -341,19 +348,6 @@
           wallY.length = wallY.length - 1;
           wallX.length = wallX.length - 1;
       }*/
-  }
-
-  function randomXNEW() {
-      if (hardcore >= 4) {
-          var krass = Math.floor((Math.random() * (hardcore - (-hardcore)) + (-hardcore)));
-          return (krass === 0 || krass === 1 || krass === -1 || krass === 2 || krass === -2) ? randomXNEW() : krass;
-
-      } else {
-          var krass = Math.floor((Math.random() * (hardcore - (-hardcore)) + (-hardcore)));
-          return krass;
-
-      }
-
   }
 
   function startLevel() {
@@ -385,7 +379,7 @@
       levelStarted = false;
   }
 
-  //FIXME levelOne() triggering
+  //FIXME levelWon() triggering
   function collideTest() {
 
       //collision test bottom side of the car
@@ -403,23 +397,22 @@
       }
 
       //collision test top side of the car
-      if (((canvas.width / 2) - 50 - wallX[2]) >= (racerX)) {
+      else if (((canvas.width / 2) - 50 - wallX[2]) >= (racerX)) {
 
           levelFailed = true;
           drawLevelFailed();
           stopLevel();
-
       } else if (((canvas.width / 2) + 25 - wallX[2]) <= (racerX)) {
 
           levelFailed = true;
           drawLevelFailed();
           stopLevel();
-      } else if (wallX.length === 0) {
+      } else if ((wallX.length === 0 || wallX[0] === undefined)) {
+
           levelFailed = true;
-          drawLevelWon();
+          analyzeLevel('Won');
           stopLevel();
       }
-
   }
 
   function batmanCar() {
@@ -450,15 +443,6 @@
           leftMove = false;
           rightMove = true;
       }
-
-      //movement on y-axis is not needed            
-      /*if (e.keyCode == 38) {
-          racerY = racerY - 10;
-      }
-
-      if (e.keyCode == 40) {
-          racerY = racerY + 10;
-      }*/
   }
 
   function racerMove() {
@@ -470,7 +454,6 @@
               racerX = racerX + 2;
           }
       }
-
   }
 
   function doKeyUp(e) {
@@ -485,13 +468,4 @@
           leftMove = false;
           rightMove = false;
       }
-
-      //movement on y-axis is not needed            
-      /*if (e.keyCode == 38) {
-          racerY = racerY - 10;
-      }
-
-      if (e.keyCode == 40) {
-          racerY = racerY + 10;
-      }*/
   }

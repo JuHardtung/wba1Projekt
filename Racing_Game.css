@@ -1,8 +1,3 @@
-@font-face {
-    font-family: 'Press Start 2P';
-    src: url('E:\Bibliotheken\Dokumente\Uni\wba1\wba1Projekt');
-}
-
 nav {
     margin: 10px 0;
     background-color: #E64A19;
@@ -37,7 +32,7 @@ nav a {
     display: block;
     padding: 0 10px;
     color: #FFF;
-    font-size: 10px;
+    font-size: 8px;
     line-height: 60px;
     text-decoration: none;
 }
